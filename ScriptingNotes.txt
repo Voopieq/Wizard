@@ -1,0 +1,14 @@
+Character stats:
+These stats can be on one script attached to a character, because they will scale throughout the run. On each run they will reset to default values, hence no need for saving them when turning on the game. Only persist between different levels. Stats can be upgraded after completing every room, or after completing specific room, marked on the map?
+
+Weapon upgrades:
+For each different weapon levels make a separate scriptable object? So in a case of a better weapon loot drop, the better weapon will have this script attached with better abilities. All of this will require an inventory system (do something like Ember Knights: three weapons and artifacts below).
+OR 
+Upon completing a room give player the choice to upgrade specific weapon with bigger increase in stats, or upgrade all of them with smaller amount.
+
+Artifacts:
+Artifacts are like skills - e.g. for every successful crit hit, add ice effect; every third attack deals increased damage. Every artifact is a separate object. Artifacts are only obtainable in the specifically marked tiles.
+
+Gold, or notes (for currency):
+Spend notes to upgrade starting weapon?
+Spend currency to unlock new artifacts to show up in drops.
