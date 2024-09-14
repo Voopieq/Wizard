@@ -8,6 +8,8 @@ public class TestingGrid : MonoBehaviour
     private Camera _camera;
     private Vector2 _mousePos;
 
+    [SerializeField] Transform pfSquare;
+
     void Start()
     {
         _grid = new Grid(4, 2, 10f);
