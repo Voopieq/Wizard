@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestingGrid : MonoBehaviour
+public class TestingGrid_Older : MonoBehaviour
 {
     private GridHex<GridObject> _grid;
     private Camera _camera;
@@ -28,27 +28,14 @@ public class TestingGrid : MonoBehaviour
 
     void Start()
     {
-        _grid = new GridHex<GridObject>(width: 11, height: 7, 1f, (GridHex<GridObject> g, int y, int x) => new GridObject());
+        _grid = new GridHex<GridObject>(8, 5, 1f, (GridHex<GridObject> g, int x, int y) => new GridObject());
         _camera = Camera.main;
 
-        int[][] testArray = new int[7][];
-
-        testArray[0] = new int[_grid.GetWidth()-3];
-        testArray[1] = new int[_grid.GetWidth()-2];
-        testArray[2] = new int[_grid.GetWidth()-1];
-        testArray[3] = new int[_grid.GetWidth()];
-        testArray[4] = new int[_grid.GetWidth()-1];
-        testArray[5] = new int[_grid.GetWidth()-2];
-        testArray[6] = new int[_grid.GetWidth()-3];
-
-        float xOffset = 0;
-
-        for (int y = 0; y < testArray.Length; y++)
+        for (int x = 0; x < _grid.GetWidth(); x++)
         {
-            xOffset = (testArray[3].Length - testArray[y].Length) * 1f * 0.5f;
-            for (int x = 0; x < testArray[y].Length; x++)
+            for (int y = 0; y < _grid.GetHeight(); y++)
             {
-                Transform cloneTransform = Instantiate(prefabHex, _grid.GetWorldPosition(x, y, xOffset), Quaternion.identity);
+                Transform cloneTransform = Instantiate(prefabHex, _grid.GetWorldPosition(x, y), Quaternion.identity);
                 _grid.GetHexValue(x, y).cloneTransform = cloneTransform;
                 _grid.GetHexValue(x, y).Hide();
             }

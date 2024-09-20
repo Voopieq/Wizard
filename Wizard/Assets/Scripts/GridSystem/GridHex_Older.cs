@@ -5,7 +5,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GridHex<TGridObject>
+public class GridHex_Older<TGridObject>
 {
     // Grid dimensions
     private int m_width;
@@ -16,31 +16,22 @@ public class GridHex<TGridObject>
     private const float m_vertical_hex_offset = 0.75f;
 
     // Grid array
-    private TGridObject[][] m_gridArray;
+    private TGridObject[,] m_gridArray;
 
     //Constructor to initialize grid array
-    public GridHex(int width, int height, float cellSize, Func<GridHex<TGridObject>, int, int, TGridObject> createGridObject)
+    public GridHex_Older(int width, int height, float cellSize, Func<GridHex_Older<TGridObject>, int, int, TGridObject> createGridObject)
     {
         m_width = width;
         m_height = height;
         m_cellSize = cellSize;
 
-        m_gridArray = new TGridObject[m_height][];
+        m_gridArray = new TGridObject[m_width, m_height];
 
-        m_gridArray[0] = new TGridObject[m_width-3];
-        m_gridArray[1] = new TGridObject[m_width-2];
-        m_gridArray[2] = new TGridObject[m_width-1];
-        m_gridArray[3] = new TGridObject[m_width];
-        m_gridArray[4] = new TGridObject[m_width-1];
-        m_gridArray[5] = new TGridObject[m_width-2];
-        m_gridArray[6] = new TGridObject[m_width-3];
-
-        // y is height, x is width
-        for (int y=0; y<m_gridArray.Length; y++)
+        for(int x=0; x<m_width; x++)
         {
-            for(int x=0; x < m_gridArray[y].Length; x++)
+            for(int y=0; y<m_height; y++)
             {
-                m_gridArray[y][x] = createGridObject(this, y, x);
+                m_gridArray[x, y] = createGridObject(this, x, y);
             }
         }
 
@@ -77,56 +68,38 @@ public class GridHex<TGridObject>
                (y % 2 == 1 ? new Vector3(1, 0, 0) * m_cellSize * 0.5f : Vector3.zero);
     }
 
-    // Convert local space coordinates to world space coordinates with offset
-    public Vector3 GetWorldPosition(int x, int y, float offset)
-    {
-        return new Vector3(x, 0, 0) * m_cellSize +
-               new Vector3(0, y, 0) * m_cellSize * m_vertical_hex_offset +
-               new Vector3(1, 0, 0) * offset;
-    }
-
     // Convert world space coordinates to local space coordinates
     private void GetLocalPosition(Vector3 worldCoord, out int x, out int y)
     {
+        int roughX = Mathf.RoundToInt(worldCoord.x / m_cellSize);
         int roughY = Mathf.RoundToInt(worldCoord.y / m_cellSize / m_vertical_hex_offset);
 
-        if(roughY >=0 && roughY < m_gridArray.Length)
+        
+        Vector2Int shortestDistance = new Vector2Int(roughX, roughY);
+
+        bool odd = roughY % 2 == 1;
+        List<Vector2Int> neighbours = new List<Vector2Int>
         {
-            float xOffset = (m_gridArray[3].Length - m_gridArray[roughY].Length) * 0.5f * m_cellSize;
+            shortestDistance + new Vector2Int(-1, 0),
+            shortestDistance + new Vector2Int(1, 0),
 
-            int roughX = Mathf.RoundToInt((worldCoord.x - xOffset) / m_cellSize);
+            shortestDistance + new Vector2Int(odd ? 1 : -1, 1),
+            shortestDistance + new Vector2Int(0, 1),
 
-            Vector2Int shortestDistance = new Vector2Int(roughX, roughY);
+            shortestDistance + new Vector2Int(odd ? 1 : -1, -1),
+            shortestDistance + new Vector2Int(0, -1),
+        };
 
-            /*bool odd = roughY % 2 == 1;
-            List<Vector2Int> neighbours = new List<Vector2Int>
-            {
-                shortestDistance + new Vector2Int(-1, 0),
-                shortestDistance + new Vector2Int(1, 0),
-
-                shortestDistance + new Vector2Int(odd ? 1 : -1, 1),
-                shortestDistance + new Vector2Int(0, 1),
-
-                shortestDistance + new Vector2Int(odd ? 1 : -1, -1),
-                shortestDistance + new Vector2Int(0, -1),
-            };
-
-            foreach (Vector2Int neighbour in neighbours)
-            {
-                if(Vector2.Distance(worldCoord, GetWorldPosition(neighbour.x, neighbour.y)) < 
-                   Vector2.Distance(worldCoord, GetWorldPosition(shortestDistance.x, shortestDistance.y)))
-                {
-                    shortestDistance = neighbour;
-                }
-            }*/
-            x = shortestDistance.x;
-            y = shortestDistance.y;
-        }
-        else
+        foreach (Vector2Int neighbour in neighbours)
         {
-            x = -1;
-            y = -1;
+            if(Vector2.Distance(worldCoord, GetWorldPosition(neighbour.x, neighbour.y)) < 
+               Vector2.Distance(worldCoord, GetWorldPosition(shortestDistance.x, shortestDistance.y)))
+            {
+                shortestDistance = neighbour;
+            }
         }
+        x = shortestDistance.x;
+        y = shortestDistance.y;
     }
 
 
@@ -139,7 +112,7 @@ public class GridHex<TGridObject>
     {
         if(x >= 0 && y >= 0 && x <= m_width && y <= m_height)
         {
-            m_gridArray[x][y] = value;
+            m_gridArray[x, y] = value;
         }
         else
         {
@@ -156,12 +129,11 @@ public class GridHex<TGridObject>
     }
 
     // Get grid array value, giving local space coordinates
-    // y is height, x is width
     public TGridObject GetHexValue(int x, int y)
     {
-        if (x >= 0 && y >= 0 && x < m_gridArray[y].Length && y < m_gridArray.Length)
+        if (x >= 0 && y >= 0 && x < m_width && y < m_height)
         {
-            return m_gridArray[y][x];
+            return m_gridArray[x, y];
         }
         else
         {
@@ -174,7 +146,6 @@ public class GridHex<TGridObject>
     {
         int x, y;
         GetLocalPosition(worldCoord,out x,out y);
-        Debug.Log(x + ", " + y);
         return GetHexValue(x, y);
     }
 
