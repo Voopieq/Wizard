@@ -16,7 +16,7 @@ public class GridHex<TGridObject>
     private const float m_vertical_hex_offset = 0.75f;
 
     // Grid array
-    private TGridObject[,] m_gridArray;
+    private TGridObject[][] m_gridArray;
 
     //Constructor to initialize grid array
     public GridHex(int width, int height, float cellSize, Func<GridHex<TGridObject>, int, int, TGridObject> createGridObject)
@@ -25,13 +25,21 @@ public class GridHex<TGridObject>
         m_height = height;
         m_cellSize = cellSize;
 
-        m_gridArray = new TGridObject[m_width, m_height];
+        m_gridArray = new TGridObject[m_height][];
 
-        for(int x=0; x<m_width; x++)
+        m_gridArray[0] = new TGridObject[m_width-3];
+        m_gridArray[1] = new TGridObject[m_width-2];
+        m_gridArray[2] = new TGridObject[m_width-1];
+        m_gridArray[3] = new TGridObject[m_width];
+        m_gridArray[4] = new TGridObject[m_width-1];
+        m_gridArray[5] = new TGridObject[m_width-2];
+        m_gridArray[6] = new TGridObject[m_width-3];
+
+        for (int x=0; x<m_gridArray.Length; x++)
         {
-            for(int y=0; y<m_height; y++)
+            for(int y=0; y < m_gridArray[x].Length; y++)
             {
-                m_gridArray[x, y] = createGridObject(this, x, y);
+                m_gridArray[x][y] = createGridObject(this, x, y);
             }
         }
 
@@ -66,6 +74,13 @@ public class GridHex<TGridObject>
         return new Vector3(x, 0, 0) * m_cellSize + 
                new Vector3(0, y, 0) * m_cellSize * m_vertical_hex_offset + 
                (y % 2 == 1 ? new Vector3(1, 0, 0) * m_cellSize * 0.5f : Vector3.zero);
+    }
+
+    public Vector3 GetWorldPosition(int x, int y, float offset)
+    {
+        return new Vector3(x, 0, 0) * m_cellSize +
+               new Vector3(0, y, 0) * m_cellSize * m_vertical_hex_offset +
+               new Vector3(1, 0, 0) * offset;
     }
 
     // Convert world space coordinates to local space coordinates
@@ -112,7 +127,7 @@ public class GridHex<TGridObject>
     {
         if(x >= 0 && y >= 0 && x <= m_width && y <= m_height)
         {
-            m_gridArray[x, y] = value;
+            m_gridArray[x][y] = value;
         }
         else
         {
@@ -133,7 +148,7 @@ public class GridHex<TGridObject>
     {
         if (x >= 0 && y >= 0 && x < m_width && y < m_height)
         {
-            return m_gridArray[x, y];
+            return m_gridArray[x][y];
         }
         else
         {
