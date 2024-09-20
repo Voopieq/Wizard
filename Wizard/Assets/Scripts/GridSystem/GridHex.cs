@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridHex<TGridObject>
@@ -70,13 +71,35 @@ public class GridHex<TGridObject>
     // Convert world space coordinates to local space coordinates
     private void GetLocalPosition(Vector3 worldCoord, out int x, out int y)
     {
-        x = Mathf.FloorToInt(worldCoord.x / m_cellSize);
-        y = Mathf.FloorToInt(worldCoord.y / m_cellSize);
+        int roughX = Mathf.RoundToInt(worldCoord.x / m_cellSize);
+        int roughY = Mathf.RoundToInt(worldCoord.y / m_cellSize / m_vertical_hex_offset);
 
-        // Take rough coordinates
-        // Take 6 neighbours around rough hex
-        // Measure distance between mouse position and neighbours. Shortest distance is correct hex
-        TGridObject shortestDistanceHex = m_gridArray[x, y];
+        
+        Vector2Int shortestDistance = new Vector2Int(roughX, roughY);
+
+        bool odd = roughY % 2 == 1;
+        List<Vector2Int> neighbours = new List<Vector2Int>
+        {
+            shortestDistance + new Vector2Int(-1, 0),
+            shortestDistance + new Vector2Int(1, 0),
+
+            shortestDistance + new Vector2Int(odd ? 1 : -1, 1),
+            shortestDistance + new Vector2Int(0, 1),
+
+            shortestDistance + new Vector2Int(odd ? 1 : -1, -1),
+            shortestDistance + new Vector2Int(0, -1),
+        };
+
+        foreach (Vector2Int neighbour in neighbours)
+        {
+            if(Vector2.Distance(worldCoord, GetWorldPosition(neighbour.x, neighbour.y)) < 
+               Vector2.Distance(worldCoord, GetWorldPosition(shortestDistance.x, shortestDistance.y)))
+            {
+                shortestDistance = neighbour;
+            }
+        }
+        x = shortestDistance.x;
+        y = shortestDistance.y;
     }
 
 
@@ -108,7 +131,7 @@ public class GridHex<TGridObject>
     // Get grid array value, giving local space coordinates
     public TGridObject GetHexValue(int x, int y)
     {
-        if (x >= 0 && y >= 0 && x <= m_width && y <= m_height)
+        if (x >= 0 && y >= 0 && x < m_width && y < m_height)
         {
             return m_gridArray[x, y];
         }

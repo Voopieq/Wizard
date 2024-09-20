@@ -45,16 +45,19 @@ public class TestingGrid : MonoBehaviour
 
     private void Update()
     {
-        if(_gridObject != null)
+        _mousePos = GetMouseWorldPos(Input.mousePosition);
+        if (_gridObject != null && _gridObject != _grid.GetHexValue(_mousePos))
         {
             _gridObject.Hide();
         }
-        _mousePos = GetMouseWorldPos(Input.mousePosition);
-        GridObject gridObject = _grid.GetHexValue(_mousePos);
-        if (gridObject != null)
+
+        GridObject newGridObject = _grid.GetHexValue(_mousePos);
+
+        if (newGridObject != null && newGridObject != _gridObject)
         {
-            gridObject.Show();
+            newGridObject.Show();
         }
+        _gridObject = newGridObject;
 
     }
 
