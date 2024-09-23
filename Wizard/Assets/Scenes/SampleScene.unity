@@ -343,6 +343,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabHex: {fileID: 6771049759014007995, guid: 736c97cdbb31a9348ab8d0d3faadb079, type: 3}
+  prefabAttack: {fileID: 6771049759014007995, guid: 42a406df7460a6b43b3d491b2eed1263, type: 3}
+  _attackAmount: 0.2
+  _skipAmount: 0.89
 --- !u!1 &787151969
 GameObject:
   m_ObjectHideFlags: 0
