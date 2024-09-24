@@ -344,7 +344,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabHex: {fileID: 6771049759014007995, guid: 736c97cdbb31a9348ab8d0d3faadb079, type: 3}
   prefabAttack: {fileID: 6771049759014007995, guid: 42a406df7460a6b43b3d491b2eed1263, type: 3}
+  hexGridObjectSO: {fileID: 11400000, guid: cd73db452905a944794be5ab986d1240, type: 2}
   _attackAmount: 0.2
+  _starsAmount: 0.2
   _skipAmount: 0.89
 --- !u!1 &787151969
 GameObject:
