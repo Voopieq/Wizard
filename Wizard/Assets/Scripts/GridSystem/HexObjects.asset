@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e3aaec87b7c174294b83bf4cc66c5f, type: 3}
+  m_Name: HexObjects
+  m_EditorClassIdentifier: 
+  prefabHex: {fileID: 6771049759014007995, guid: 736c97cdbb31a9348ab8d0d3faadb079, type: 3}
+  prefabAttack: {fileID: 6771049759014007995, guid: 42a406df7460a6b43b3d491b2eed1263, type: 3}
+  prefabStar: {fileID: 6771049759014007995, guid: 8f16a0b340b7f2b45b3e725f6f7583bd, type: 3}

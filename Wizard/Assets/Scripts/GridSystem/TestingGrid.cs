@@ -10,11 +10,12 @@ public class TestingGrid : MonoBehaviour
     private Camera _camera;
     private Vector3 _mousePos;
 
-    [SerializeField] Transform prefabHex;
-    [SerializeField] Transform prefabAttack;
+
+    [SerializeField] HexGridObjectsSO hexGridObjectSO;
     private GridObject _gridObject;
 
     [SerializeField, Range(0, 1)] private float _attackAmount = 0.2f;
+    [SerializeField, Range(0, 1)] private float _starsAmount = 0.2f;
     [SerializeField, Range(0, 1)] private float _skipAmount = 0.1f;
 
     private class GridObject
@@ -63,34 +64,71 @@ public class TestingGrid : MonoBehaviour
             for(int x = 0; x < testArray[y].Length; x++)
             {
                 coordinates.Add(new Vector2Int(x, y));
-/*                Transform cloneTransform = Instantiate(prefabHex, _grid.GetWorldPosition(x, y, xOffset), Quaternion.identity);
+                Transform cloneTransform = Instantiate(hexGridObjectSO.prefabHex, _grid.GetWorldPosition(x, y, xOffset), Quaternion.identity);
                 _grid.GetHexValue(x, y).cloneTransform = cloneTransform;
-                _grid.GetHexValue(x, y).Hide();*/
+                _grid.GetHexValue(x, y).Hide();
             }
         }
 
+        int _attackCount = Mathf.FloorToInt(coordinates.Count * _attackAmount);
+        int _starsCount = Mathf.FloorToInt(coordinates.Count * _starsAmount);
 
-        int index = 0;
+        GenerateDifferentHex(coordinates, testArray, 420, hexGridObjectSO.prefabAttack, _attackCount);
+        GenerateDifferentHex(coordinates, testArray, 9, hexGridObjectSO.prefabStar, _starsCount);
+
+        // Maybe move the code below in different function, in which I will provide
+        // testarray, List, random seed and hexPrefab?
+
+
+
+
+        /*int index = 0;
         // Get the number of tiles for attack
         int _attackCount = Mathf.FloorToInt(coordinates.Count * _attackAmount);
+        int _starsCount = Mathf.FloorToInt(coordinates.Count * _starsAmount);
         // Get the number of tiles for regular hex
         // SIDE NOTE: use _skipCount if you want to leave some areas empty. For our situation we need the map
         // to always be filled with blank Hexes, and then replace those Hexes texture by randomly selecting.
-        // int _skipCount = Mathf.FloorToInt(coordinates.Count * _skipAmount);
+        int _skipCount = Mathf.FloorToInt(coordinates.Count * _skipAmount);
         Random random = new Random(5);
 
         // Iterate through randomly selected coordinates and instantiate either attack hex or regular hex
-        foreach (Vector2Int coordinate in coordinates.OrderBy(t => random.Next()).Take(coordinates.Count))
+        foreach (Vector2Int coordinate in coordinates.OrderBy(t => random.Next()).Take(coordinates.Count - _skipCount))
         {
             bool isAttack = index++ < _attackCount;
             xOffset = (testArray[3].Length - testArray[coordinate.y].Length) * 1f * 0.5f;
-            Transform prefab = isAttack ? prefabAttack : prefabHex;
+            Transform prefab = isAttack ? hexGridObjectSO.prefabAttack : hexGridObjectSO.prefabStar;
+            Transform cloneTransform = Instantiate(prefab, _grid.GetWorldPosition(coordinate.x, coordinate.y, xOffset), Quaternion.identity);
+            _grid.GetHexValue(coordinate.x, coordinate.y).cloneTransform = cloneTransform;
+            _grid.GetHexValue(coordinate.x, coordinate.y).Hide();
+
+        }*/
+
+    }
+
+    private void GenerateDifferentHex(List<Vector2Int> coordinates, int[][] testArray, int seed, Transform prefabToUse, int hexCount)
+    {
+        int index = 0;
+        float xOffset = 0;
+        // Get the number of tiles for attack
+        //int _attackCount = Mathf.FloorToInt(coordinates.Count * _attackAmount);
+        //int _starsCount = Mathf.FloorToInt(coordinates.Count * _starsAmount);
+        // Get the number of tiles for regular hex
+        // SIDE NOTE: use _skipCount if you want to leave some areas empty. For our situation we need the map
+        // to always be filled with blank Hexes, and then replace those Hexes texture by randomly selecting.
+        int _skipCount = Mathf.FloorToInt(coordinates.Count * _skipAmount);
+        Random random = new Random();
+
+        // Iterate through randomly selected coordinates and instantiate either attack hex or regular hex
+        foreach (Vector2Int coordinate in coordinates.OrderBy(t => random.Next()).Take(hexCount))
+        {
+            xOffset = (testArray[3].Length - testArray[coordinate.y].Length) * 1f * 0.5f;
+            Transform prefab = prefabToUse;
             Transform cloneTransform = Instantiate(prefab, _grid.GetWorldPosition(coordinate.x, coordinate.y, xOffset), Quaternion.identity);
             _grid.GetHexValue(coordinate.x, coordinate.y).cloneTransform = cloneTransform;
             _grid.GetHexValue(coordinate.x, coordinate.y).Hide();
 
         }
-
     }
 
     private void Update()
